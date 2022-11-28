@@ -30,26 +30,44 @@ public class BarbarianTree {
     }
 
     public void putFirst(Barbarian barbarian){
+        barbarian.setGeneration(0);
+        barbarian.setHeritage(barbarian.getLands());
         this.root = new Node(barbarian);
         this.size++;
     }
 
     public boolean put(String name, Barbarian son){
         Node father = find(name);
+        son.setGeneration((father.getBarbarian().getGeneration() + 1));
 
-        if (father != null){
-            father.addSon(son);
-            size++;
-            return true;
-        }
-
-        return false;
+        father.addSon(son);
+        size++;
+        return true;
     }
     
     public long getSize(){
         return this.size;
     }
 
+    public ArrayList<Barbarian> toList(){
+        var list = new ArrayList<Barbarian>();
+
+        return toList(root, list);
+    }
+
+    private ArrayList<Barbarian> toList(Node node, ArrayList<Barbarian> list){
+        list.add(node.barbarian);
+        
+        if (node.hasSons()){
+            var lands = node.getBarbarian().getHeritage() / node.sons.size();
+            for (var obj: node.sons){
+                obj.getBarbarian().setHeritage(lands);
+                toList(obj, list);
+            }
+        }
+            
+        return list;
+    }
 
     public class Node {
         private Barbarian barbarian;
